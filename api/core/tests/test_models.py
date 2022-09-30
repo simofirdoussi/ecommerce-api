@@ -36,6 +36,7 @@ class TestModels(TestCase):
 
         self.assertEqual(user.email, email)
         self.assertTrue(user.check_password(password))
+        self.assertTrue(user.is_active)
 
     def test_create_superuser(self):
         """Testing the creation of a superuser."""
