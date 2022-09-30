@@ -4,13 +4,15 @@ Project models.
 from django.db import models
 from django.contrib.auth.base_user import (
     BaseUserManager,
-    AbstractBaseUser)
+    AbstractBaseUser,
+    )
+from django.contrib.auth.models import PermissionsMixin
 
 
 class UserManager(BaseUserManager):
     """Base user manager."""
 
-    def create_user(self, email, password=None):
+    def create_user(self, email, password=None, **extra_fields):
         """Creates and saves a User with the given email and password"""
 
         if not email:
@@ -18,6 +20,7 @@ class UserManager(BaseUserManager):
 
         user = self.model(
             email=self.normalize_email(email),
+            **extra_fields
         )
 
         user.set_password(password)
@@ -39,13 +42,17 @@ class UserManager(BaseUserManager):
         return user
 
 
-class User(AbstractBaseUser):
+class User(AbstractBaseUser, PermissionsMixin):
     """Custom user model."""
 
     email = models.EmailField(
         verbose_name='email address',
         max_length=255,
         unique=True,
+    )
+    name = models.CharField(
+        max_length=255,
+        null=True
     )
 
     is_active = models.BooleanField(default=True)
