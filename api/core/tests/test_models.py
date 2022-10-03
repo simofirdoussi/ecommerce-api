@@ -1,9 +1,15 @@
 """
 Unit tests for models.
 """
+from decimal import Decimal
 
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+from core.models import Product
+
+from unittest.mock import patch
+
+from core import models
 
 
 def create_user(email='email@example.com', password='pass1234'):
@@ -64,3 +70,24 @@ class TestModels(TestCase):
                 email=input,
             )
             self.assertEqual(user.email, expected)
+
+    def test_create_product(self):
+        """Testing the creation of a product."""
+        user = create_user()
+        product = Product.objects.create(
+            user = user,
+            title = 'Product title',
+            description = 'descripition of the product',
+            price=Decimal('5.50'),
+        )
+
+        self.assertEqual(str(product), product.title)
+
+    @patch('core.models.uuid.uuid4')
+    def test_file_naming_products(self, mock_uuid):
+        """Testing the naming of the uploaded product image."""
+        uuid = 'test-uuid'
+        mock_uuid.return_value = uuid
+        file_path = models.product_image_file_path(None, 'example.jpg')
+
+        self.assertEqual(file_path, f'uploads/product/{uuid}.jpg')

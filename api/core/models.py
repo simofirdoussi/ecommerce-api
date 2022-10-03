@@ -1,12 +1,24 @@
 """
 Project models.
 """
+import os
+import uuid
+
 from django.db import models
 from django.contrib.auth.base_user import (
     BaseUserManager,
     AbstractBaseUser,
     )
 from django.contrib.auth.models import PermissionsMixin
+from django.conf import settings
+
+
+def product_image_file_path(instance, filename):
+    """Generate file path for new product image."""
+    ext = os.path.splitext(filename)[1]
+    filename = f'{uuid.uuid4()}{ext}'
+
+    return os.path.join('uploads', 'product', filename)
 
 
 class UserManager(BaseUserManager):
@@ -62,3 +74,18 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
+
+
+class Product(models.Model):
+    """Product entity class."""
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+        )
+    title = models.CharField(max_length=255, null=True)
+    price = models.DecimalField(max_digits=5, decimal_places=2)
+    description = models.TextField(blank=True)
+    image = models.ImageField(null=True, upload_to=product_image_file_path)
+
+    def __str__(self):
+        return self.title
