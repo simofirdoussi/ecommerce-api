@@ -5,6 +5,7 @@ from decimal import Decimal
 
 from product.serializers import (
     ProductSerializer,
+    ProductDetailSerializer
 )
 
 from core.models import Product
@@ -74,7 +75,7 @@ class PublicProductApiTest(TestCase):
         res = self.client.get(url)
 
         product = Product.objects.get(pk=product.id)
-        serializer = ProductSerializer(product)
+        serializer = ProductDetailSerializer(product)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
@@ -111,7 +112,8 @@ class PrivateProductApiTest(TestCase):
         self.assertEqual(res.data, serializer.data)
 
     def test_create_product(self):
-        pass
+        """Test the creation of a product."""
+
 
     def test_partial_update_product(self):
         pass
