@@ -30,9 +30,19 @@ class ProductPrivateViewSet(viewsets.ModelViewSet):
     authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     queryset = Product.objects.all()
-    serializer_class = ProductSerializer
+    serializer_class = ProductDetailSerializer
 
     def get_queryset(self):
         return self.queryset.filter(
             user=self.request.user
         )
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return ProductSerializer
+        else:
+            return self.serializer_class
+
+    def perform_create(self, serializer):
+        """Assigns the user to the product object."""
+        serializer.save(user=self.request.user)

@@ -113,6 +113,19 @@ class PrivateProductApiTest(TestCase):
 
     def test_create_product(self):
         """Test the creation of a product."""
+        payload = {
+            'title':'Product title',
+            'description':'descripition of the product',
+            'price':Decimal('5.50'),
+        }
+        res = self.client.post(PRODUCTS_PRIVATE_URL, payload)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        product = Product.objects.get(pk=res.data['id'])
+        for k, v in payload.items():
+            self.assertEqual(getattr(product, k), v)
+
+        self.assertEqual(product.user, self.user)
 
 
     def test_partial_update_product(self):
