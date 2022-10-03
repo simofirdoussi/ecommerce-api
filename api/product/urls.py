@@ -12,7 +12,8 @@ from product import views
 
 
 router = DefaultRouter()
-router.register('products', views.ProductViewSet)
+router.register('products', views.ProductViewSet, basename='product')
+router.register('privateproducts', views.ProductPrivateViewSet, basename='privateproduct')
 
 app_name = 'product'
 urlpatterns = [

@@ -2,6 +2,7 @@
 Product APIs unit tests.
 """
 from decimal import Decimal
+
 from product.serializers import ProductSerializer
 
 from core.models import Product
@@ -15,6 +16,8 @@ from rest_framework import status
 
 
 PRODUCTS_URL = reverse('product:product-list')
+
+PRODUCTS_PRIVATE_URL = reverse('product:privateproduct-list')
 
 
 def create_product(user, **params):
@@ -38,7 +41,7 @@ def create_user(email='email@mail.com', password='pass12345'):
 
 
 class PublicProductApiTest(TestCase):
-    """Public procut apis unit tests."""
+    """Public product apis unit tests."""
 
     def setUp(self):
         self.client = APIClient()
@@ -56,3 +59,45 @@ class PublicProductApiTest(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
+
+class PrivateProductApiTest(TestCase):
+    """Private product apis unit tests."""
+
+    def setUp(self):
+        self.client = APIClient()
+        self.user = create_user()
+
+        self.client.force_authenticate(self.user)
+
+    def test_retrieve_products(self):
+        """Test retrieving specific user products."""
+
+        create_product(user=self.user)
+        create_product(user=self.user, title='title product')
+        other_user = create_user(
+            email='other@mail.com',
+            password='password1234',
+        )
+        create_product(user=other_user, title='title product')
+
+        products = Product.objects.filter(user=self.user)
+        serializer = ProductSerializer(products, many=True)
+
+        res = self.client.get(PRODUCTS_PRIVATE_URL)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(products.count(), 2)
+
+        self.assertEqual(res.data, serializer.data)
+
+    def test_create_product(self):
+        pass
+
+    def test_partial_update_product(self):
+        pass
+
+    def test_full_update_product(self):
+        pass
+
+    def test_delete_product(self):
+        pass
