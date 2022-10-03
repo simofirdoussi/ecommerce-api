@@ -5,7 +5,6 @@ from decimal import Decimal
 
 from product.serializers import (
     ProductSerializer,
-    ProductDetailSerializer,
 )
 
 from core.models import Product
@@ -44,7 +43,7 @@ def create_user(email='email@mail.com', password='pass12345'):
 
 
 def product_detail_url(product_id):
-    return reverse('product:product-detail', ards=[product_id])
+    return reverse('product:product-detail', args=[product_id])
 
 
 class PublicProductApiTest(TestCase):
@@ -75,7 +74,7 @@ class PublicProductApiTest(TestCase):
         res = self.client.get(url)
 
         product = Product.objects.get(pk=product.id)
-        serializer = ProductDetailSerializer(product)
+        serializer = ProductSerializer(product)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
