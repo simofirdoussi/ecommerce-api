@@ -3,7 +3,10 @@ Product APIs unit tests.
 """
 from decimal import Decimal
 
-from product.serializers import ProductSerializer
+from product.serializers import (
+    ProductSerializer,
+    ProductDetailSerializer,
+)
 
 from core.models import Product
 
@@ -40,6 +43,10 @@ def create_user(email='email@mail.com', password='pass12345'):
     )
 
 
+def product_detail_url(product_id):
+    return reverse('product:product-detail', ards=[product_id])
+
+
 class PublicProductApiTest(TestCase):
     """Public product apis unit tests."""
 
@@ -59,6 +66,20 @@ class PublicProductApiTest(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
+
+    def test_retrieve_detail_product(self):
+        """Test retrieving a single product."""
+        user=create_user()
+        product = create_product(user=user)
+        url = product_detail_url(product.id)
+        res = self.client.get(url)
+
+        product = Product.objects.get(pk=product.id)
+        serializer = ProductDetailSerializer(product)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, serializer.data)
+
 
 class PrivateProductApiTest(TestCase):
     """Private product apis unit tests."""
