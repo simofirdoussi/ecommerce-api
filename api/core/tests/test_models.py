@@ -75,9 +75,9 @@ class TestModels(TestCase):
         """Testing the creation of a product."""
         user = create_user()
         product = Product.objects.create(
-            user = user,
-            title = 'Product title',
-            description = 'descripition of the product',
+            user=user,
+            title='Product title',
+            description='descripition of the product',
             price=Decimal('5.50'),
         )
 
