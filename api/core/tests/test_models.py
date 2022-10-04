@@ -5,7 +5,9 @@ from decimal import Decimal
 
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from core.models import Product
+from core.models import (
+    Product,
+    Review)
 
 from unittest.mock import patch
 
@@ -26,6 +28,18 @@ def create_superuser(email='email@example.com', password='pass1234'):
         email=email,
         password=password,
     )
+
+
+def create_product(user, **params):
+    """Creates and returns a product."""
+    defaults = {
+        'title': 'Product title',
+        'description': 'descripition of the product',
+        'price': Decimal('5.50'),
+    }
+    defaults.update(params)
+
+    return Product.objects.create(user=user, **defaults)
 
 
 class TestModels(TestCase):
@@ -91,3 +105,17 @@ class TestModels(TestCase):
         file_path = models.product_image_file_path(None, 'example.jpg')
 
         self.assertEqual(file_path, f'uploads/product/{uuid}.jpg')
+
+    def test_create_review(self):
+        """Test the creation of a review object."""
+        user = create_user()
+        product = create_product(user=user)
+        review = Review.objects.create(
+            product=product,
+            user=user,
+            name='name',
+            rating=4,
+            comment='comment of the review',
+        )
+
+        self.assertEqual(str(review), review.name)
