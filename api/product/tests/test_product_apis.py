@@ -75,7 +75,7 @@ class PublicProductApiTest(TestCase):
 
     def test_retrieve_detail_product(self):
         """Test retrieving a single product."""
-        user=create_user()
+        user = create_user()
         product = create_product(user=user)
         url = product_detail_url(product.id)
         res = self.client.get(url)
@@ -120,9 +120,9 @@ class PrivateProductApiTest(TestCase):
     def test_create_product(self):
         """Test the creation of a product."""
         payload = {
-            'title':'Product title',
-            'description':'descripition of the product',
-            'price':Decimal('5.50'),
+            'title': 'Product title',
+            'description': 'descripition of the product',
+            'price': Decimal('5.50'),
         }
         res = self.client.post(PRODUCTS_PRIVATE_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
@@ -132,7 +132,6 @@ class PrivateProductApiTest(TestCase):
             self.assertEqual(getattr(product, k), v)
 
         self.assertEqual(product.user, self.user)
-
 
     def test_partial_update_product(self):
         """Testing the partial update of a product."""
@@ -189,6 +188,7 @@ class PrivateProductApiTest(TestCase):
         url = product_detail_private_url(product.id)
         res = self.client.patch(url, {'user': other_user.id})
 
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
         product.refresh_from_db()
         self.assertEqual(product.user, self.user)
 

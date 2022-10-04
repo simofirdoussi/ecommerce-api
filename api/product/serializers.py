@@ -14,6 +14,7 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = ['id', 'title', 'price']
 
+
 class ProductDetailSerializer(ProductSerializer):
     """Product detail serializer."""
 
