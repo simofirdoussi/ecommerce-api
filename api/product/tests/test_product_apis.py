@@ -153,7 +153,54 @@ class PrivateProductApiTest(TestCase):
         self.assertEqual(product.user, self.user)
 
     def test_full_update_product(self):
-        pass
+        """Testing the full update of a product object."""
+        payload = {
+            'title': 'title product updated',
+            'description': 'Description product updated.',
+            'price': Decimal(7),
+        }
+        product = create_product(user=self.user)
+        url = product_detail_private_url(product.id)
+        res = self.client.put(url, payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        product.refresh_from_db()
+        for k, v in payload.items():
+            self.assertEqual(getattr(product, k), v)
+
+        self.assertEqual(product.user, self.user)
 
     def test_delete_product(self):
-        pass
+        """Testing the deletion of a specific product"""
+        product = create_product(user=self.user)
+        url = product_detail_private_url(product.id)
+        res = self.client.delete(url)
+
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(Product.objects.filter(pk=product.id).exists())
+
+    def test_change_user_product_error(self):
+        """Returns error when trying to change user of a product instance."""
+        other_user = create_user(
+            email='other@mail.com',
+            password='password1234',
+        )
+        product = create_product(user=self.user)
+        url = product_detail_private_url(product.id)
+        res = self.client.patch(url, {'user': other_user.id})
+
+        product.refresh_from_db()
+        self.assertEqual(product.user, self.user)
+
+    def test_delete_product_user(self):
+        """Test deleting other users product error"""
+        other_user = create_user(
+            email='other@mail.com',
+            password='password1234',
+        )
+        product = create_product(user=other_user)
+        url = product_detail_private_url(product.id)
+        res = self.client.delete(url)
+
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertTrue(Product.objects.filter(pk=product.id).exists())

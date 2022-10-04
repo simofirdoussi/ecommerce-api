@@ -19,4 +19,3 @@ class ProductDetailSerializer(ProductSerializer):
 
     class Meta(ProductSerializer.Meta):
         fields = ProductSerializer.Meta.fields + ['description']
-
