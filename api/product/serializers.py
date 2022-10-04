@@ -20,6 +20,3 @@ class ProductDetailSerializer(ProductSerializer):
     class Meta(ProductSerializer.Meta):
         fields = ProductSerializer.Meta.fields + ['description']
 
-    def create(self, validated_data):
-        """Creates and returns a product object."""
-        return Product.objects.create(**validated_data)

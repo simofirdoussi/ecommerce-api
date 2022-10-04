@@ -44,7 +44,13 @@ def create_user(email='email@mail.com', password='pass12345'):
 
 
 def product_detail_url(product_id):
+    """Returns the product detail url."""
     return reverse('product:product-detail', args=[product_id])
+
+
+def product_detail_private_url(product_id):
+    """Returns the product detail private url."""
+    return reverse('product:privateproduct-detail', args=[product_id])
 
 
 class PublicProductApiTest(TestCase):
@@ -129,7 +135,22 @@ class PrivateProductApiTest(TestCase):
 
 
     def test_partial_update_product(self):
-        pass
+        """Testing the partial update of a product."""
+        payload = {
+            'title': 'title product updated',
+            'price': Decimal(7),
+        }
+        product = create_product(user=self.user)
+        url = product_detail_private_url(product.id)
+        res = self.client.patch(url, payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        product.refresh_from_db()
+        for k, v in payload.items():
+            self.assertEqual(getattr(product, k), v)
+
+        self.assertEqual(product.user, self.user)
 
     def test_full_update_product(self):
         pass
