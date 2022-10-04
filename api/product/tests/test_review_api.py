@@ -80,7 +80,7 @@ class PrivateReviewTest(TestCase):
     """Private test cases for review endpoints."""
 
     def setUp(self):
-        self.client = APIClient( )
+        self.client = APIClient()
         self.user = create_user()
         self.product = create_product(user=self.user)
 
@@ -88,13 +88,14 @@ class PrivateReviewTest(TestCase):
 
     def test_retrive_reviews(self):
         """Test retrieving reviews."""
-        review1 = create_review(
+        create_review(
             product=self.product,
             user=self.user
         )
-        review2 = create_review(
+        create_review(
             product=self.product,
-            user=self.user
+            user=self.user,
+            name='review name 2'
         )
         res = self.client.get(REVIEW_URL)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -182,7 +183,6 @@ class PrivateReviewTest(TestCase):
         serializer = ReviewDetailSerializer(review)
         self.assertEqual(res.data, serializer.data)
 
-
     def test_error_update_user_review(self):
         """Test updating user review returns error."""
         other_user = create_user(
@@ -204,7 +204,7 @@ class PrivateReviewTest(TestCase):
 
         self.assertEqual(review.user, self.user)
 
-    def test_error_update_user_review(self):
+    def test_error_update_product_review(self):
         """Test updating review product returns error."""
         other_product = create_product(
             user=self.user,
@@ -233,4 +233,3 @@ class PrivateReviewTest(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(Review.objects.filter(pk=review.id).exists())
-
