@@ -2,16 +2,17 @@
 Unit tests for models.
 """
 from decimal import Decimal
+from datetime import datetime
 
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from core.models import (
     Product,
-    Review)
+    Review,
+    Order)
+from core import models
 
 from unittest.mock import patch
-
-from core import models
 
 
 def create_user(email='email@example.com', password='pass1234'):
@@ -119,3 +120,16 @@ class TestModels(TestCase):
         )
 
         self.assertEqual(str(review), review.name)
+
+    def test_create_order(self):
+        """Test the creation of an order instance."""
+        user = create_user()
+
+        order = Order.objects.create(
+            user=user,
+            price=Decimal('9.99'),
+            done = True,
+            processed_at = datetime.now(),
+        )
+
+        self.assertEqual(str(order), str(order.created_at))

@@ -104,3 +104,17 @@ class Review(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Order(models.Model):
+    user = models.ForeignKey(
+            settings.AUTH_USER_MODEL,
+            on_delete=models.CASCADE,
+            null=True)
+    price = models.DecimalField(max_digits=7, decimal_places=2, null=True)
+    done = models.BooleanField(default=False)
+    processed_at = models.DateTimeField(auto_now_add=False, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.created_at)
