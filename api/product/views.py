@@ -5,8 +5,12 @@ Product APIs.
 from .serializers import (
     ProductDetailSerializer,
     ProductSerializer,
+    ReviewDetailSerializer,
+    ReviewSerializer,
     )
-from core.models import Product
+from core.models import (
+    Product,
+    Review)
 
 from rest_framework import viewsets
 from rest_framework import permissions
@@ -46,3 +50,17 @@ class ProductPrivateViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Assigns the user to the product object."""
         serializer.save(user=self.request.user)
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    """Product api viewset."""
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Review.objects.all()
+    serializer_class = ReviewDetailSerializer
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return ReviewSerializer
+        else:
+            return self.serializer_class

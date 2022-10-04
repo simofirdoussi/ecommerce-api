@@ -2,9 +2,26 @@
 Product serializers.
 """
 
-from core.models import Product
+from core.models import (
+    Product,
+    Review)
 
 from rest_framework import serializers
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    """Review serializer."""
+
+    class Meta:
+        model = Review
+        fields = ['id', 'name', 'rating']
+
+
+class ReviewDetailSerializer(ReviewSerializer):
+    """Review detail serializer"""
+
+    class Meta(ReviewSerializer.Meta):
+        fields = ReviewSerializer.Meta.fields + ['comment']
 
 
 class ProductSerializer(serializers.ModelSerializer):

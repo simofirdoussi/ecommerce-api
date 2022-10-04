@@ -17,6 +17,7 @@ router.register(
     'privateproducts',
     views.ProductPrivateViewSet,
     basename='privateproduct')
+router.register('reviews', views.ReviewViewSet)
 
 app_name = 'product'
 urlpatterns = [
