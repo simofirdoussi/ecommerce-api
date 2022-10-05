@@ -5,8 +5,11 @@ from decimal import Decimal
 
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.auth import get_user_model
-from django.utils import timezone
+
+from product.tests.test_order_apis import (
+    create_admin_user,
+    create_user,
+    create_order)
 
 from rest_framework.test import APIClient
 from rest_framework import status
@@ -19,25 +22,7 @@ from product.serializers import OrderItemSerializer
 
 
 ORDERITEMS_URL = reverse('product:orderitem-list')
-
-
-def create_user(email='email@mail.com', password='password1234'):
-    """Creates and returns a user"""
-    return get_user_model().objects.create_user(
-        email=email,
-        password=password,
-    )
-
-
-def create_order(user, **params):
-    """Creates and returns an order"""
-    defaults = {
-        'price': Decimal('7.99'),
-        'done': False,
-        'processed_at': timezone.now(),
-    }
-    defaults.update(params)
-    return Order.objects.create(user=user, **defaults)
+ORDERITEMS_PRIVATE_URL = reverse('product:orderitemprivate-list')
 
 
 def create_product(user, **params):
@@ -70,6 +55,11 @@ def create_orderItem(order, product, **params):
 def orderitem_detail_url(orderitem_id):
     """Returns an orderitem detail url."""
     return reverse('product:orderitem-detail', args=[orderitem_id])
+
+
+def orderitem_private_detail_url(orderitem_id):
+    """Returns an orderitem private detail url."""
+    return reverse('product:orderitemprivate-detail', args=[orderitem_id])
 
 
 class PublicOrderItemAPITest(TestCase):
@@ -172,3 +162,46 @@ class PrivateOrderItemAPITest(TestCase):
 
         self.assertNotEqual(orderitem.name, payload['name'])
         self.assertNotEqual(orderitem.price, payload['price'])
+
+class PrivateAdminOrderItemAPITest(TestCase):
+    """Private orderitem test cases for admin user. """
+
+    def setUp(self):
+        self.client = APIClient()
+        self.user = create_user()
+        self.admin_user = create_admin_user()
+        self.client.force_authenticate(self.admin_user)
+
+    def test_retrieve_all_orderItems(self):
+        """Test retrieving all order items."""
+        product1 = create_product(user=self.user)
+        product2 = create_product(user=self.user, title='product title 2')
+        order = create_order(user=self.user)
+        create_orderItem(order=order, product=product1)
+        create_orderItem(order=order, product=product2)
+        other_user = create_user(
+            email='other@mail.com'
+        )
+        other_order = create_order(user=other_user)
+        create_orderItem(order=other_order, product=product1)
+
+        res = self.client.get(ORDERITEMS_PRIVATE_URL)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        orderItems = OrderItem.objects.all()
+        serializer = OrderItemSerializer(orderItems, many=True)
+
+        self.assertEqual(res.data, serializer.data)
+
+
+    def test_delete_orderitem(self):
+        """Testing the deletion of an orderitem."""
+        product = create_product(user=self.user)
+        order = create_order(user=self.user)
+
+        orderitem = create_orderItem(order=order, product=product)
+        url = orderitem_private_detail_url(orderitem.id)
+        res = self.client.delete(url)
+
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(OrderItem.objects.filter(pk=orderitem.id).exists())

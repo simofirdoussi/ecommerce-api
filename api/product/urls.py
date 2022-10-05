@@ -22,6 +22,9 @@ router.register('orderprivate',
                 views.OrderPrivateViewset,
                 basename='orderprivate')
 router.register('orderitems', views.OrderItemViewset)
+router.register('orderitemprivate',
+                views.OrderItemPrivateViewset,
+                basename='orderitemprivate')
 
 app_name = 'product'
 urlpatterns = [

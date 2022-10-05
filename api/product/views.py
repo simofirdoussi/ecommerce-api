@@ -123,3 +123,12 @@ class OrderItemViewset(mixins.CreateModelMixin,
         )
 
 
+class OrderItemPrivateViewset(OrderItemViewset,
+                              mixins.UpdateModelMixin,
+                              mixins.DestroyModelMixin):
+    """Orderitem private viewset."""
+
+    permission_classes = [permissions.IsAdminUser]
+
+    def get_queryset(self):
+        return self.queryset
