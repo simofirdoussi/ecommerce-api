@@ -128,8 +128,8 @@ class TestModels(TestCase):
         order = Order.objects.create(
             user=user,
             price=Decimal('9.99'),
-            done = True,
-            processed_at = datetime.now(),
+            done=True,
+            processed_at=datetime.now(),
         )
 
         self.assertEqual(str(order), str(order.created_at))
