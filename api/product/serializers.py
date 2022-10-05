@@ -5,9 +5,19 @@ Product serializers.
 from core.models import (
     Product,
     Review,
-    Order)
+    Order,
+    OrderItem)
 
 from rest_framework import serializers
+
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    """OrderItem Serializer."""
+
+    class Meta:
+        model = OrderItem
+        fields = ['id', 'name', 'price', 'product', 'order']
+
 
 
 class OrderSerializer(serializers.ModelSerializer):

@@ -53,7 +53,7 @@ def create_order(user, **params):
 
 
 class PublicOrderTest(TestCase):
-    """Public test cases for review endpoints."""
+    """Public test cases for Order endpoints."""
 
     def setUp(self):
         self.client = APIClient()

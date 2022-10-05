@@ -9,11 +9,13 @@ from .serializers import (
     ProductSerializer,
     ReviewDetailSerializer,
     ReviewSerializer,
+    OrderItemSerializer
     )
 from core.models import (
     Product,
     Review,
-    Order)
+    Order,
+    OrderItem)
 
 from rest_framework import viewsets, mixins
 from rest_framework import permissions
@@ -73,7 +75,7 @@ class OrderViewSet(mixins.CreateModelMixin,
                    mixins.RetrieveModelMixin,
                    mixins.ListModelMixin,
                    viewsets.GenericViewSet):
-    """Product api viewset."""
+    """Order api viewset."""
     authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     queryset = Order.objects.all()
@@ -103,3 +105,21 @@ class OrderPrivateViewset(OrderViewSet,
 
     def get_queryset(self):
         return self.queryset
+
+
+class OrderItemViewset(mixins.CreateModelMixin,
+                       mixins.RetrieveModelMixin,
+                       mixins.ListModelMixin,
+                       viewsets.GenericViewSet):
+    """OrderItem viewset for normal users."""
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = OrderItem.objects.all()
+    serializer_class = OrderItemSerializer
+
+    def get_queryset(self):
+        return self.queryset.filter(
+            order__user=self.request.user
+        )
+
+
