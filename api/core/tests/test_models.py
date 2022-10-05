@@ -2,14 +2,15 @@
 Unit tests for models.
 """
 from decimal import Decimal
-from datetime import datetime
+from django.utils import timezone
 
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from core.models import (
     Product,
     Review,
-    Order)
+    Order,
+    OrderItem)
 from core import models
 
 from unittest.mock import patch
@@ -129,7 +130,25 @@ class TestModels(TestCase):
             user=user,
             price=Decimal('9.99'),
             done=True,
-            processed_at=datetime.now(),
+            processed_at=timezone.now(),
         )
 
         self.assertEqual(str(order), str(order.created_at))
+
+    def test_create_orderitem(self):
+        """Testing the creation of an orderitem."""
+        user = create_user()
+        product = create_product(user=user)
+        order  = Order.objects.create(
+            user=user,
+            price=Decimal('9.99'),
+            done=True,
+            processed_at=timezone.now(),
+        )
+        orderItem = OrderItem.objects.create(
+            product=product,
+            order=order,
+            name='orderitem name',
+            price=Decimal('1.99'),
+        )
+        self.assertEqual(str(orderItem), orderItem.name)
