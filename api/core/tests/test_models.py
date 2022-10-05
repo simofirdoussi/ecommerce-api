@@ -139,7 +139,7 @@ class TestModels(TestCase):
         """Testing the creation of an orderitem."""
         user = create_user()
         product = create_product(user=user)
-        order  = Order.objects.create(
+        order = Order.objects.create(
             user=user,
             price=Decimal('9.99'),
             done=True,

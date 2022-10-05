@@ -19,7 +19,6 @@ class OrderItemSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'price', 'product', 'order']
 
 
-
 class OrderSerializer(serializers.ModelSerializer):
     """Order serializer."""
 

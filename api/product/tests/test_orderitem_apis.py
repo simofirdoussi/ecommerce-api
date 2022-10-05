@@ -14,10 +14,9 @@ from product.tests.test_order_apis import (
 from rest_framework.test import APIClient
 from rest_framework import status
 
-from core.models import(
-    Order,
+from core.models import (
     Product,
-    OrderItem)
+    OrderItem,)
 from product.serializers import OrderItemSerializer
 
 
@@ -109,7 +108,7 @@ class PrivateOrderItemAPITest(TestCase):
     def test_retrieve_orderitem_user(self):
         """Test retrieving one orderitem for user."""
         product = create_product(user=self.user)
-        order = create_order(user=self.user )
+        order = create_order(user=self.user)
         orderItem = create_orderItem(order=order, product=product)
         url = orderitem_detail_url(orderItem.id)
         res = self.client.get(url)
@@ -163,6 +162,7 @@ class PrivateOrderItemAPITest(TestCase):
         self.assertNotEqual(orderitem.name, payload['name'])
         self.assertNotEqual(orderitem.price, payload['price'])
 
+
 class PrivateAdminOrderItemAPITest(TestCase):
     """Private orderitem test cases for admin user. """
 
@@ -192,7 +192,6 @@ class PrivateAdminOrderItemAPITest(TestCase):
         serializer = OrderItemSerializer(orderItems, many=True)
 
         self.assertEqual(res.data, serializer.data)
-
 
     def test_delete_orderitem(self):
         """Testing the deletion of an orderitem."""
