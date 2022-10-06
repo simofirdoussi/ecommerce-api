@@ -34,3 +34,10 @@ docker-compose run --rm app sh -c "python manage.py runserver"
 Adding the necessary packages to the requirements.txt or requirements.dev.txt(for dev only packages) file is necessary before any push.
 After the push, a series of checks are run automatically(see .github/worflows/checks.yml), including flake8 and the unit tests. Please make sure to format your code before pushing to the repository.
 Flake8 which is a great toolkit for checking your code base against coding style (PEP8), programming errors (like “library imported but unused” and “Undefined name”).
+
+## Documentation
+An auto API Documentation has been set using swagger.
+`````shell script
+http://127.0.0.1:8000/api/docs/-ui/
+`````
+![alt](https://https://github.com/simofirdoussi/ecommerce-api/tree/main/images/swagger-docs.png)
