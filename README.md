@@ -4,13 +4,19 @@
 <h3> Steps to get the project on your computer: </h3>
 
 ## Create a directory where you want to clone the project
+`````shell script
 mkdir ecom
+`````
 
 ## Change into the directory
+`````shell script
 cd ecom
+`````
 
 ## clone the project
+`````shell script
 git clone https://github.com/simofirdoussi/ecommerce-api.git
+`````
 
 **Build locally and run**
 
@@ -20,7 +26,9 @@ docker-compose build
 `````
 
 ## Start the development server
+`````shell script
 docker-compose run --rm app sh -c "python manage.py runserver"
+`````
 
 **Important:**
 
