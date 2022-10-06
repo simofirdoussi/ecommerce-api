@@ -40,4 +40,4 @@ An auto API Documentation has been set using swagger.
 `````shell script
 http://127.0.0.1:8000/api/docs/-ui/
 `````
-![alt](https://https://github.com/simofirdoussi/ecommerce-api/tree/main/images/swagger-docs.png)
+![alt](https://github.com/simofirdoussi/ecommerce-api/blob/main/images/swagger-docs.png)
