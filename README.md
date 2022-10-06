@@ -1,5 +1,4 @@
-# ecommerce-api
-<h1> A Basic E-Commerce API using TDD. </h1>
+<h1> A Basic E-Commerce API using TDD </h1>
 
 <h3> Steps to get the project on your computer: </h3>
 
