@@ -29,4 +29,5 @@ router.register('orderitemprivate',
 app_name = 'product'
 urlpatterns = [
     path('', include(router.urls)),
+    path('process-order/', views.ProcessOrder.as_view(), name='processorder')
 ]

@@ -11,7 +11,11 @@ from django.utils import timezone
 from rest_framework.test import APIClient
 from rest_framework import status
 
-from core.models import Order
+
+from core.models import (
+    Order,
+    Product,
+    OrderItem)
 from product.serializers import (
     OrderSerializer,
     OrderDetailSerializer)
@@ -19,6 +23,7 @@ from product.serializers import (
 
 ORDERS_URL = reverse('product:order-list')
 ORDERS_PRIVATE_URL = reverse('product:orderprivate-list')
+PROCESS_ORDER = reverse('product:processorder')
 
 
 def order_detail_url(order_id):
@@ -50,6 +55,33 @@ def create_order(user, **params):
     }
     defaults.update(params)
     return Order.objects.create(user=user, **defaults)
+
+
+def create_product(user, **params):
+    """Creates and returns a product."""
+    defaults = {
+        'title': 'Product title',
+        'description': 'descripition of the product',
+        'price': Decimal('5.50'),
+    }
+    defaults.update(params)
+
+    return Product.objects.create(user=user, **defaults)
+
+
+def create_orderItem(order, product, **params):
+    """Creates and returns orderitem."""
+    defaults = {
+        'name': 'orderitem default name.',
+        'price': Decimal('5.50'),
+    }
+    defaults.update(params)
+
+    return OrderItem.objects.create(
+        order=order,
+        product=product,
+        **defaults
+    )
 
 
 class PublicOrderTest(TestCase):
@@ -147,6 +179,28 @@ class PrivateOrderTests(TestCase):
         self.assertFalse(order.done)
         self.assertNotEqual(str(order.processed_at),
                             str(payload['processed_at']))
+
+    def test_process_order(self):
+        """Testing the order process after paiment is done."""
+        product1 = create_product(user=self.user)
+        product2 = create_product(user=self.user, title='product title 2')
+        order = create_order(user=self.user)
+        create_orderItem(order=order, product=product1)
+        create_orderItem(order=order, product=product2)
+
+        payload = {
+            'order': order.id
+        }
+        res = self.client.post(PROCESS_ORDER, payload)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        orders = Order.objects.filter(pk=res.data['id'])
+        self.assertEqual(orders.count(), 1)
+        order = orders[0]
+
+        serializer = OrderSerializer(order)
+
+        self.assertEqual(res.data, serializer.data)
 
 
 class PrivateAdminOrderTests(TestCase):

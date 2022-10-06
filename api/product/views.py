@@ -17,9 +17,13 @@ from core.models import (
     Order,
     OrderItem)
 
+from django.utils import timezone
+
 from rest_framework import viewsets, mixins
-from rest_framework import permissions
+from rest_framework import permissions, status
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
@@ -132,3 +136,25 @@ class OrderItemPrivateViewset(OrderItemViewset,
 
     def get_queryset(self):
         return self.queryset
+
+
+class ProcessOrder(APIView):
+    """Process order api view."""
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        """Process order."""
+
+        try:
+            order_id = request.data.get('order')
+            order = Order.objects.get(pk=order_id)
+            order.done = True
+            order.processed_at = timezone.now()
+            order.save()
+            serializer = OrderSerializer(order)
+
+            return Response(serializer.data, status.HTTP_200_OK)
+
+        except KeyError:
+            Response({'detail': 'Missing order id.'})
